@@ -1,8 +1,20 @@
 export default async function handler(req, res) {
-  const { message, provider } = req.body;
+  if (req.method !== "POST") {
+    return res.status(405).json({
+      error: "Use POST com JSON",
+      example: {
+        message: "Olá",
+        provider: "openai"
+      }
+    });
+  }
+
+  const { message, provider = "openai" } = req.body || {};
 
   if (!message) {
-    return res.status(400).json({ error: "Mensagem obrigatória" });
+    return res.status(400).json({
+      error: "Mensagem obrigatória"
+    });
   }
 
   if (provider === "openai") {
@@ -44,5 +56,7 @@ export default async function handler(req, res) {
     });
   }
 
-  return res.status(400).json({ error: "Provider inválido" });
+  return res.status(400).json({
+    error: "Provider inválido"
+  });
 }
