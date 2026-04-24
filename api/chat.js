@@ -38,9 +38,10 @@ export default async function handler(req, res) {
 
       const data = await response.json();
 
-      return res.status(200).json({
-        reply: data.output_text || "Erro ao gerar resposta"
-      });
+      const reply =
+         data.output?.[0]?.content?.[0]?.text ||
+           "Erro ao gerar resposta";
+      return res.status(200).json({ reply });   
     }
 
     if (provider === "gemini") {
