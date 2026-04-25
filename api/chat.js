@@ -434,6 +434,11 @@ export default async function handler(req, res) {
         data.output?.[0]?.content?.[0]?.text ||
         data.output?.[1]?.content?.[0]?.text ||
         "Não consegui gerar resposta.";
+      reply = reply
+       .replace(/【.*?】/g, "")
+       .replace(/\[.*?:.*?\]/g, "")
+       .replace(/\s+/g, " ")
+       .trim();
 
       return res.status(200).json({ reply });
     }
