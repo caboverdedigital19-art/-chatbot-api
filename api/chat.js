@@ -136,6 +136,13 @@ HIERARQUIA DE FONTES
   a fonte mais alta.
 - Nunca inventes dados.
 
+CONTEXTO DA CONVERSA:
+- Se o utilizador responder apenas "sim", "ok", "quero", "pode ser", continuar o último tópico.
+- Nunca mudar de assunto depois de uma confirmação curta.
+- Se a pergunta anterior era sobre candidatura, responder sobre candidatura.
+- Se a pergunta anterior era sobre requisitos, responder sobre requisitos.
+- Se não houver contexto suficiente, perguntar: "Queres que eu continue sobre qual programa?"
+
 ----------------------------------
 FORMATO DE LINKS (OBRIGATÓRIO)
 ----------------------------------
@@ -377,7 +384,7 @@ export default async function handler(req, res) {
     });
   }
 
-  const { message, provider = "openai" } = req.body || {};
+  const { message, provider = "openai", history = [] } = req.body || {};
 
   if (!message) {
     return res.status(400).json({
@@ -397,7 +404,13 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           model: "gpt-4.1-mini",
           instructions: SYSTEM_PROMPT,
-          input: message,
+          input: [
+            ...history,
+            {
+              role: "user",
+              content: message
+            }
+          ],
           tools: [
             {
               type: "file_search",
@@ -439,7 +452,13 @@ export default async function handler(req, res) {
               {
                 parts: [
                   {
-                    text: `${SYSTEM_PROMPT}\n\nPergunta do utilizador: ${message}`
+                    text: `${SYSTEM_PROMPT}
+
+                      Histórico recente:
+                      ${history.map(h => `${h.role}: ${h.content}`).join("\n")}
+
+                      Pergunta do utilizador:
+                      ${message}`
                   }
                 ]
               }
