@@ -429,11 +429,12 @@ export default async function handler(req, res) {
         });
       }
 
-      const reply =
+      let reply =
         data.output_text ||
         data.output?.[0]?.content?.[0]?.text ||
         data.output?.[1]?.content?.[0]?.text ||
         "Não consegui gerar resposta.";
+      
       reply = reply
        .replace(/【.*?】/g, "")
        .replace(/\[.*?:.*?\]/g, "")
